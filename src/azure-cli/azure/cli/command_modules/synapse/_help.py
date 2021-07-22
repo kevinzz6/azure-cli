@@ -1677,3 +1677,40 @@ examples:
         az synapse integration-runtime-node get-ip-address --workspace-name testsynapseworkspace --resource-group rg \\
           --name selfhostedintegrationruntime --node-name testnode
 """
+
+helps['synapse managed-private-endpoints'] = """
+type: group
+short-summary: Manage synapse managed private endpoints.
+"""
+
+helps['synapse managed-private-endpoints get'] = """
+type: command
+short-summary: Get a synapse managed private endpoints.
+examples:
+  - name: Get a synapse managed private endpoints.
+    text: |-
+        az synapse managed private endpoints get --workspace-name testsynapseworkspace \\
+          --managed-private-endpoint-namename testendpointname \\
+          --managed-virtual-network-name testvnetname 
+"""
+
+helps['synapse managed-private-endpoints create'] = """
+type: command
+short-summary: Create a synapse managed private endpoints.
+examples:
+  - name: Create a synapse managed private endpoints.
+    text: |-
+        az synapse managed private endpoints create --workspace-name testsynapseworkspace \\
+          --managed-private-endpoint-namename testendpointname \\
+          --managed-virtual-network-name testvnetname 
+"""
+
+helps['synapse managed-private-endpoints list'] = """
+type: command
+short-summary: List synapse managed private endpoints in a managed virtualnetwork.
+examples:
+  - name: Create a synapse managed private endpoints.
+    text: |-
+        az synapse managed private endpoints create --workspace-name testsynapseworkspace \\
+          --managed-virtual-network-name testvnetname 
+"""
