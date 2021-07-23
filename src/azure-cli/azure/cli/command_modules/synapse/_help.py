@@ -1690,7 +1690,7 @@ examples:
   - name: Get a synapse managed private endpoints.
     text: |-
         az synapse managed private endpoints get --workspace-name testsynapseworkspace \\
-          --managed-private-endpoint-namename testendpointname \\
+          --managed-private-endpoint-name testendpointname \\
           --managed-virtual-network-name testvnetname 
 """
 
@@ -1707,7 +1707,7 @@ examples:
 
 helps['synapse managed-private-endpoints list'] = """
 type: command
-short-summary: List synapse managed private endpoints in a managed virtualnetwork.
+short-summary: List synapse managed private endpoints in a workspace.
 examples:
   - name: Create a synapse managed private endpoints.
     text: |-

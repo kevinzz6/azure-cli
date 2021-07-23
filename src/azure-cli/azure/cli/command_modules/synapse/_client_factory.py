@@ -225,3 +225,6 @@ def cf_synapse_client_managedprivateendpoints_factory(cli_ctx, workspace_name):
         credential=cred,
         endpoint='{}{}{}'.format("https://", workspace_name, cli_ctx.cloud.suffixes.synapse_analytics_endpoint)
     )
+
+def cf_synapse_managedprivateendpoints_factory(cli_ctx, workspace_name):
+    return cf_synapse_client_managedprivateendpoints_factory(cli_ctx, workspace_name).managed_private_endpoints
