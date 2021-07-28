@@ -1683,15 +1683,15 @@ type: group
 short-summary: Manage synapse managed private endpoints.
 """
 
-helps['synapse managed-private-endpoints get'] = """
+helps['synapse managed-private-endpoints show'] = """
 type: command
 short-summary: Get a synapse managed private endpoints.
 examples:
   - name: Get a synapse managed private endpoints.
     text: |-
-        az synapse managed private endpoints get --workspace-name testsynapseworkspace \\
+        az synapse managed-private-endpoints show --workspace-name testsynapseworkspace \\
           --managed-private-endpoint-name testendpointname \\
-          --managed-virtual-network-name testvnetname 
+          --managed-virtual-network-name default 
 """
 
 helps['synapse managed-private-endpoints create'] = """
@@ -1700,17 +1700,30 @@ short-summary: Create a synapse managed private endpoints.
 examples:
   - name: Create a synapse managed private endpoints.
     text: |-
-        az synapse managed private endpoints create --workspace-name testsynapseworkspace \\
-          --managed-private-endpoint-namename testendpointname \\
-          --managed-virtual-network-name testvnetname 
+        az synapse managed-private-endpoints create --workspace-name testsynapseworkspace \\
+          --managed-private-endpoint-name testendpointname \\
+          --managed-virtual-network-name default \\
+          --private-Link-Resource-Id '/subscriptions/yoursub/resourceGroups/myResourceGroup/providers/Microsoft.Storage/accounts/myStorageAccount' \\
+          --group_Id blob
 """
 
 helps['synapse managed-private-endpoints list'] = """
 type: command
 short-summary: List synapse managed private endpoints in a workspace.
 examples:
-  - name: Create a synapse managed private endpoints.
+  - name: List a synapse managed private endpoints.
     text: |-
-        az synapse managed private endpoints create --workspace-name testsynapseworkspace \\
-          --managed-virtual-network-name testvnetname 
+        az synapse-managed-private-endpoints list --workspace-name testsynapseworkspace \\
+          --managed-virtual-network-name default 
+"""
+
+helps['synapse managed-private-endpoints delete'] = """
+type: command
+short-summary: delete synapse managed private endpoints in a workspace.
+examples:
+  - name: Delete a synapse managed private endpoints.
+    text: |-
+        az synapse-managed-private-endpoints delete --workspace-name testsynapseworkspace \\
+          --managed-private-endpoint-name testendpointname \\
+          --managed-virtual-network-name default 
 """

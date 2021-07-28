@@ -732,3 +732,17 @@ def load_arguments(self, _):
                    help='Enable or disable the self-hosted integration runtime auto-update.')
         c.argument('update_delay_offset',
                    help='The time of the day for the self-hosted integration runtime auto-update.')
+
+    # synapse managed private endpoints
+    for scope in ['get', 'create','delete']:
+        with self.argument_context('synapse managed-private-endpoints ' + scope) as c:
+            c.argument('workspace_name', arg_type=workspace_name_arg_type)
+            c.argument('managed_private_endpoint_name', arg_type=name_type, help='The managed private endpoint name.')
+            c.argument('managed_virtual_network_name', arg_type=name_type, help='The managed virtual network name.')
+
+    with self.argument_context('synapse managed-private-endpoints list') as c:
+        c.argument('workspace_name', arg_type=workspace_name_arg_type)
+
+    with self.argument_context('synapse managed-private-endpoints create') as c:
+        c.argument('private_Link_Resource_Id', help='The ARM resource ID of the resource to which the managed private endpoint is created. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}')  
+        c.argument('group_Id', help='The groupId to which the managed private endpoint is created')

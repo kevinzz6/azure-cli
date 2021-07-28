@@ -479,15 +479,15 @@ def load_command_table(self, _):
         g.custom_command('list', 'list_notebooks')
         g.custom_show_command('show', 'get_notebook')
         g.custom_command('export', 'export_notebook')
-        g.custom_command('delete', 'delete_notebook', confirmation=True, supports_no_wait=True)
-
-    with self.command_group('synapse', is_preview=True):
-        pass
+        g.custom_command('delete', 'delete_notebook', confirmation=True, supports_no_wait=True) 
 
     # Data Plane Commands --Managed private endpoints operations
     with self.command_group('synapse managed-private-endpoints', synapse_managed_private_endpoints_sdk,
                            custom_command_type=get_custom_sdk('managedprivateendpoints', None)) as g:
-        g.custom_command('get', 'get_Managed_private_endpoints')
+        g.custom_show_command('show', 'get_Managed_private_endpoints')
         g.custom_command('create', 'create_Managed_private_endpoints', supports_no_wait=True)
         g.custom_command('list', 'list_Managed_private_endpoints')
         g.custom_command('delete', 'delete_Managed_private_endpoints', confirmation=True, supports_no_wait=True)
+
+    with self.command_group('synapse', is_preview=True):
+        pass

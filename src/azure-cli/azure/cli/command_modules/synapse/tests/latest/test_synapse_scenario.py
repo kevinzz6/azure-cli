@@ -1362,3 +1362,40 @@ class SynapseScenarioTests(ScenarioTest):
             checks=[
                 self.check('name', self.kwargs['selfhosted-integration-runtime'])
             ])
+
+    @record_only()
+    def test_managed_private_endpoints(self):
+        self.kwargs.update({
+            'workspace': 'hozhao-pe',
+            'name': 'weishuSDKtest',
+            'vnetname':'default',
+            'privateLinkResourceId': '/subscriptions/7f31cba8-b597-4129-b158-8f21a7395bd0/resourceGroups/catestrg/providers/Microsoft.Storage/storageAccounts/weishu1',
+            'groupId': 'table'})
+
+        # create managed private endpoint
+        self.cmd(
+            'az synapse  managed-private-endpoints create --workspace-name {workspace} --managed-private-endpoint-name {name} --managed-virtual-network-name {vnetname} --private-Link-Resource-Id {privateLinkResourceId} --group-Id {groupId}',
+            checks=[
+                self.check('name', self.kwargs['name'])
+            ])
+
+        # get managed private endpoint
+        self.cmd(
+            'az synapse  managed-private-endpoints get --workspace-name {workspace} --managed-private-endpoint-name {name} --managed-virtual-network-name {vnetname}',
+            checks=[
+                self.check('name', self.kwargs['name'])
+            ])
+
+        # list managed private endpoint
+        self.cmd(
+            'az synapse  managed-private-endpoints list --workspace-name {workspace} --managed-virtual-network-name {vnetname}',
+           checks=[
+                self.check('[0].type', 'Microsoft.Synapse/workspaces/managedVirtualNetworks/managedPrivateEndpoints')
+            ])
+        
+        # delete managed private endpoint
+        self.cmd(
+            'az synapse  managed-private-endpoints delete --workspace-name {workspace} --managed-private-endpoint-name {name} --managed-virtual-network-name {vnetname} -y')
+        self.cmd(
+            'az synapse managed-private-endpoints show --workspace-name {workspace} --name {name}',
+            expect_failure=True)

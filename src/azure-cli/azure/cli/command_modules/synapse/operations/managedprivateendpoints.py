@@ -6,10 +6,14 @@
 from azure.cli.core.util import sdk_no_wait
 from .._client_factory import cf_synapse_managedprivateendpoints_factory
 
-def create_Managed_private_endpoints(cmd, workspace_name, managed_private_endpoint_name, managed_virtual_network_name="default", no_wait=False):
+def create_Managed_private_endpoints(cmd, workspace_name, managed_private_endpoint_name, private_Link_Resource_Id, group_Id, managed_virtual_network_name="default", no_wait=False):
     client = cf_synapse_managedprivateendpoints_factory(cmd.cli_ctx, workspace_name)
+    property_files = {}
+    property_files['privateLinkResourceId'] = private_Link_Resource_Id
+    property_files['groupId'] = group_Id
+    properties = property_files
     return sdk_no_wait(no_wait, client.create,
-                       managed_private_endpoint_name, managed_virtual_network_name)
+                       managed_private_endpoint_name, managed_virtual_network_name, properties)
 def get_Managed_private_endpoints(cmd, workspace_name, managed_private_endpoint_name, managed_virtual_network_name="default"):
     client = cf_synapse_managedprivateendpoints_factory(cmd.cli_ctx, workspace_name)
     return client.get(managed_private_endpoint_name, managed_virtual_network_name)
@@ -18,6 +22,8 @@ def list_Managed_private_endpoints(cmd, workspace_name, managed_virtual_network_
     client = cf_synapse_managedprivateendpoints_factory(cmd.cli_ctx, workspace_name)
     return client.list(managed_virtual_network_name)
 
-def delete_Managed_private_endpoints(cmd, workspace_name,managed_private_endpoint_name, managed_virtual_network_name="default"):
+def delete_Managed_private_endpoints(cmd, workspace_name,managed_private_endpoint_name, managed_virtual_network_name="default", no_wait=False):
     client = cf_synapse_managedprivateendpoints_factory(cmd.cli_ctx, workspace_name)
-    return client.delete(managed_private_endpoint_name, managed_virtual_network_name)
+    return sdk_no_wait(no_wait, client.delete, managed_private_endpoint_name, managed_virtual_network_name)
+
+
