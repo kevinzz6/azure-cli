@@ -1325,7 +1325,7 @@ class SynapseScenarioTests(ScenarioTest):
         self.kwargs.update({
             'location': 'eastus',
             'sql-pool': self.create_random_name(prefix='testsqlpool', length=15),
-            'performance-level': 'DW400c',
+            'performance-level': 'DW100c',
             'storage-type': 'GRS'
         })
 
@@ -1414,52 +1414,20 @@ class SynapseScenarioTests(ScenarioTest):
         self.cmd('az synapse sql pool show --name {sql-pool} --workspace {workspace} --resource-group {rg}',
                  expect_failure=True)
 
-#@record_only()
-    @ResourceGroupPreparer(name_prefix='synapse-cli', random_name_length=16)
-    @StorageAccountPreparer(name_prefix='adlsgen2', length=16, location=location, key='storage-account')
+    @record_only()
+    # remain test dependency because can't get restore point 
     def test_sql_pool_restore_and_list_deleted(self):
         self.kwargs.update({
-            #'location': 'eastus',
-            #'workspace': 'testingsynapseworkspace',
-            #'rg': 'rgtesting',
-            'sql-pool': self.create_random_name(prefix='testsqlpool', length=15),
-            'performance-level': 'DW100c',
+            'location': 'eastus',
+            'workspace': 'testingsynapseworkspace',
+            'rg': 'rgtesting',
+            'sql-pool': 'testrestoresqlpool ',
+            'performance-level': 'DW1000c',
             'dest-sql-pool': self.create_random_name(prefix='destsqlpool', length=15),
             'restore-point-time': '2021-11-04T07:02:09'
         })
 
-        # create a workspace
-        self._create_workspace()
-
-         # create firewall rule
-        self.cmd(
-            'az synapse workspace firewall-rule create --resource-group {rg} --name allowAll --workspace-name {workspace} '
-            '--start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255', checks=[
-                self.check('provisioningState', 'Succeeded')
-            ]
-        )
-        import time
-        time.sleep(20)
-
-        # check workspace name
-        self.cmd('az synapse workspace check-name --name {workspace}', checks=[
-            self.check('available', False)
-        ])
-
-        # create sql pool
-        self.cmd('az synapse sql pool create --name {sql-pool} --performance-level {performance-level} '
-                 '--workspace {workspace} --resource-group {rg} --storage-type {storage-type}',
-                 checks=[self.check('name', self.kwargs['sql-pool']),
-                         self.check('type', 'Microsoft.Synapse/workspaces/sqlPools'),
-                         self.check('provisioningState', 'Succeeded')])
-
-        # create destiny sql pool
-        self.cmd('az synapse sql pool create --name {dest-sql-pool} --performance-level {performance-level} '
-                 '--workspace {workspace} --resource-group {rg} --storage-type {storage-type}',
-                 checks=[self.check('name', self.kwargs['sql-pool']),
-                         self.check('type', 'Microsoft.Synapse/workspaces/sqlPools'),
-                         self.check('provisioningState', 'Succeeded')])
-
+        # restore sql pool
         self.cmd('az synapse sql pool restore --name {sql-pool} --workspace-name {workspace} --resource-group {rg} '
                  '--dest-name {dest-sql-pool} --time {restore-point-time}',
                  checks=[
