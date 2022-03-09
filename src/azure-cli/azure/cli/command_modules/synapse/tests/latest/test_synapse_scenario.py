@@ -2026,12 +2026,14 @@ class SynapseScenarioTests(ScenarioTest):
         self.cmd('az synapse workspace firewall-rule show --name {ruleName} --workspace-name {workspace} '
                  '--resource-group {rg}', expect_failure=True)
 
-    @record_only()
+
     @ResourceGroupPreparer(name_prefix='synapse-cli', random_name_length=16)
+    @StorageAccountPreparer(name_prefix='adlsgen2', length=16, location=location, key='storage-account')
     def test_spark_job(self, resource_group):
         self.kwargs.update({
-            'spark-pool': 'testsparkpool',
-            'workspace': 'testsynapseworkspace',
+            'spark-pool': self.create_random_name(prefix='testpool', length=15),
+            'spark-version': '2.4',
+            'file': os.path.join(os.path.join(os.path.dirname(__file__), 'assets'), 'sparkconfigfile.txt'),
             'job': 'WordCount_Java',
             'main-definition-file': 'abfss://testfilesystem@adlsgen2account.dfs.core.windows.net/samples/java/wordcount/wordcount.jar',
             'main-class-name': 'WordCount',
@@ -2042,6 +2044,33 @@ class SynapseScenarioTests(ScenarioTest):
             'executor-size': 'Medium',
             'configuration': '{\\"spark.dynamicAllocation.maxExecutors\\":\\"18\\"}'
         })
+
+        # create a workspace
+        self._create_workspace()
+
+        # check workspace name
+        self.cmd('az synapse workspace check-name --name {workspace}', checks=[
+            self.check('available', False)
+        ])
+
+        # create firewall rule
+        self.cmd(
+            'az synapse workspace firewall-rule create --resource-group {rg} --name allowAll --workspace-name {workspace} '
+            '--start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255', checks=[
+                self.check('provisioningState', 'Succeeded')
+            ]
+        )
+        import time
+        time.sleep(20)
+
+        # create spark pool
+        self.cmd('az synapse spark pool create --name {spark-pool} --spark-version {spark-version}'
+                 ' --workspace {workspace} --resource-group {rg} --node-count 3 --node-size Medium'
+                 ' --spark-config-file-path "{file}"',
+                 checks=[self.check('name', self.kwargs['spark-pool']),
+                         self.check('type', 'Microsoft.Synapse/workspaces/bigDataPools'),
+                         self.check('provisioningState', 'Succeeded'),
+                         self.check('sparkConfigProperties.filename','sparkconfigfile')])
 
         # create a spark batch job
         batch_job = self.cmd('az synapse spark job submit --name {job} --workspace-name {workspace} '
@@ -2079,18 +2108,47 @@ class SynapseScenarioTests(ScenarioTest):
                      self.check('result', 'Cancelled')
                  ])
 
-    @record_only()
+    #@record_only()
     @ResourceGroupPreparer(name_prefix='synapse-cli', random_name_length=16)
+    @StorageAccountPreparer(name_prefix='adlsgen2', length=16, location=location, key='storage-account')
     def test_spark_session_and_statements(self, resource_group):
         self.kwargs.update({
-            'spark-pool': 'testsparkpool',
-            'workspace': 'testsynapseworkspace',
+            'spark-pool': self.create_random_name(prefix='testpool', length=15),
+            'spark-version': '2.4',
+            'file': os.path.join(os.path.join(os.path.dirname(__file__), 'assets'), 'sparkconfigfile.txt'),
             'job': self.create_random_name(prefix='clisession', length=14),
             'executor-size': 'Small',
             'executors': 2,
             'code': "\"import time\ntime.sleep(10)\nprint('hello from cli')\"",
             'language': 'pyspark'
         })
+
+        # create a workspace
+        self._create_workspace()
+
+        # check workspace name
+        self.cmd('az synapse workspace check-name --name {workspace}', checks=[
+            self.check('available', False)
+        ])
+
+        # create firewall rule
+        self.cmd(
+            'az synapse workspace firewall-rule create --resource-group {rg} --name allowAll --workspace-name {workspace} '
+            '--start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255', checks=[
+                self.check('provisioningState', 'Succeeded')
+            ]
+        )
+        import time
+        time.sleep(20)
+
+        # create spark pool
+        self.cmd('az synapse spark pool create --name {spark-pool} --spark-version {spark-version}'
+                 ' --workspace {workspace} --resource-group {rg} --node-count 3 --node-size Medium'
+                 ' --spark-config-file-path "{file}"',
+                 checks=[self.check('name', self.kwargs['spark-pool']),
+                         self.check('type', 'Microsoft.Synapse/workspaces/bigDataPools'),
+                         self.check('provisioningState', 'Succeeded'),
+                         self.check('sparkConfigProperties.filename','sparkconfigfile')])
 
         # create a spark session
         create_result = self.cmd('az synapse spark session create --name {job} --workspace-name {workspace} '
@@ -2116,7 +2174,7 @@ class SynapseScenarioTests(ScenarioTest):
                      self.check('state', 'idle')
                  ])
 
-        # list all spark session jobs under a specific spark pook
+        # list all spark session jobs under a specific spark pool
         self.cmd('az synapse spark session list --workspace-name {workspace} '
                  '--spark-pool-name {spark-pool}',
                  checks=[
@@ -2279,7 +2337,7 @@ class SynapseScenarioTests(ScenarioTest):
                 self.check('provisioningState', 'Succeeded')
             ])
 
-    @record_only()
+    #@record_only()
     @ResourceGroupPreparer(name_prefix='synapse-cli', random_name_length=16)
     @StorageAccountPreparer(name_prefix='adlsgen2', length=16, location=location, key='storage-account')
     def test_linked_service(self):
