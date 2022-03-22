@@ -2108,7 +2108,6 @@ class SynapseScenarioTests(ScenarioTest):
                      self.check('result', 'Cancelled')
                  ])
 
-    #@record_only()
     @ResourceGroupPreparer(name_prefix='synapse-cli', random_name_length=16)
     @StorageAccountPreparer(name_prefix='adlsgen2', length=16, location=location, key='storage-account')
     def test_spark_session_and_statements(self, resource_group):
@@ -2337,7 +2336,6 @@ class SynapseScenarioTests(ScenarioTest):
                 self.check('provisioningState', 'Succeeded')
             ])
 
-    #@record_only()
     @ResourceGroupPreparer(name_prefix='synapse-cli', random_name_length=16)
     @StorageAccountPreparer(name_prefix='adlsgen2', length=16, location=location, key='storage-account')
     def test_linked_service(self):
