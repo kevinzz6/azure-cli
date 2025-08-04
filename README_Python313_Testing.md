@@ -25,6 +25,9 @@
 - `synapse_python313_compatibility_report.py` - 综合兼容性分析工具
 - `synapse_python313_final_report.py` - 最终评估报告生成器
 
+### 开发环境工具
+- `az-dev.bat` - Azure CLI开发环境助手脚本 (Windows)
+
 ### 测试结果
 - `synapse_python313_final_report_20250804_135814.json` - 详细测试结果数据
 
@@ -102,6 +105,9 @@ python --version  # 应显示 3.13.x
 
 # 安装依赖
 pip install knack azure-synapse-artifacts azure-core
+
+# 使用开发环境脚本 (Windows)
+.\az-dev.bat --version  # 验证开发环境
 ```
 
 ### 运行单个测试
@@ -112,8 +118,12 @@ python test_sqlpool_python313.py
 # Sensitivity Label 测试
 python test_sensitivity_label_python313.py
 
-# Artifacts 测试
+# Artifacts 测试 (使用开发环境)
 python test_artifacts_cli_python313.py
+
+# 或者使用开发脚本进行CLI测试
+.\az-dev.bat synapse --help
+.\az-dev.bat synapse linked-service list --workspace-name test20250722ws
 ```
 
 ### 生成完整报告
